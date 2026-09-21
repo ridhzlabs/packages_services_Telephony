@@ -64,7 +64,11 @@ public final class SharedSimSlotService extends Service {
 
     @Override
     public void onDestroy() {
-        mWorker.shutdownNow();
+        // Settings unbinds when its dialog stops. Drop requests that have not
+        // started, but let an accepted switch finish its confirmation and
+        // rollback: interrupting it can leave the modem switched with neither.
+        mWorker.shutdown();
+        mWorker.getQueue().clear();
         super.onDestroy();
     }
 
